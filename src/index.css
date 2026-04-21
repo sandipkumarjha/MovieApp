@@ -20,3 +20,49 @@ html, body, #root {
   ::-webkit-scrollbar-thumb:hover {
     background: #1F1E24;
   } 
+  select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0;
+    background: rgb(59, 59, 59);
+    background-image: none;
+    padding: 0 1em;
+    border-radius: 50rem;
+    color: rgb(175, 174, 174);
+    cursor: pointer;
+    font-size: 1em;
+    font-family: "open sans", sans-serif;
+    width: 100%;
+}
+select::-ms-expand{
+    display: none;
+}
+.select{
+    position: relative;
+    display: flex;
+    width: 10em;
+    border-radius: 50rem;
+    height: 3em;
+    line-height: 3;
+    overflow: hidden;
+    background: rgb(59, 59, 59);
+}
+.select::after{
+    content: "\25BC";
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0em 1em;
+    cursor: pointer;
+    pointer-events: none;
+    color: gray;
+    transition: .4s all ease;
+    background: rgb(59, 59, 59);
+}
+.select:hover::after{
+    color: #6556CD;
+}
