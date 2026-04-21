@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* primary - #1F1E24*/
+/* secondary - #6556CD*/
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 🔥 stops page scroll */
+  }
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px; 
+     
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #6556CD;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1F1E24;
+  } 
