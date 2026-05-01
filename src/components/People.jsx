@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import { useNavigate } from "react-router-dom";
-import Topnav from "./templates/Topnav";
+import Topnav from "./templates/TopNav";
 import Cards from "./templates/Cards";
 import Loading from "./Loading";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -76,7 +76,7 @@ const People = () => {
         hasMore={hasMore}
         loader={<h4 className="text-white">Loading...</h4>}
       >
-        <Cards data={people} title="person" />
+        <Cards data={people} title="person"/>
       </InfiniteScroll>
 
     </div>

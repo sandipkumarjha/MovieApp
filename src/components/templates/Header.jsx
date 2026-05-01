@@ -24,7 +24,7 @@ const Header = ({ data }) => {
 
       <p className="text-white font-serif mt-3">
         {data?.overview ? data.overview.slice(0, 300) : "No description available"}......
-        <Link className="text-blue-600">more</Link>
+        <Link to={`/${data.media_type}/details/${data.id}`} className="text-blue-600">more</Link>
       </p>
 
       <p className="text-white">
