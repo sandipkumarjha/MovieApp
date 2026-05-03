@@ -5,7 +5,7 @@ const initialState = {
 }
 
 export const movieSlice = createSlice({
-    name: 'counter',
+    name: 'movie',
     initialState,
     reducers: {
         loadmovie: (state, action) => {

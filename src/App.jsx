@@ -10,6 +10,7 @@ import People from './components/People'
 import Moviedetails from './components/Moviedetails'
 import Tvdetails from './components/Tvdetails'
 import Persondetails from './components/Persondetails'
+
 const App = () => {
   return (
     <div className='bg-[#0D0D0D] w-screen h-screen flex    '>
@@ -32,13 +33,13 @@ const App = () => {
           />
           
           
-        <Route path='/person' element={<People />}>
+        <Route path='/person' element={<People />}/>
         <Route
           path='/person/details/:id'
           element ={<Persondetails />} 
           />
           
-          </Route>
+          
       </Routes>
 
 
