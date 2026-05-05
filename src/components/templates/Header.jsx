@@ -2,8 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = ({ data }) => {
+  
   console.log(data);
-
+  
   return (
     <div
       style={{
@@ -11,7 +12,7 @@ const Header = ({ data }) => {
           data?.backdrop_path || data?.profile_path
         })`,
         backgroundSize: 'cover',
-        backgroundPosition: 'top center',
+        backgroundPosition: 'top center', 
       }}
       className="w-full h-[70vh] flex flex-col items-start justify-end p-[10%]"
     >
@@ -39,7 +40,9 @@ const Header = ({ data }) => {
       <Link className="bg-[#6556CD] p-4 rounded-3xl text-white font-medium mt-3">
         watch trailer
       </Link>
-    </div>
+      
+    </div>  
+      
   );
 };
 

@@ -10,7 +10,7 @@ import People from './components/People'
 import Moviedetails from './components/Moviedetails'
 import Tvdetails from './components/Tvdetails'
 import Persondetails from './components/Persondetails'
-
+import Trailer from './components/templates/Trailer'
 const App = () => {
   return (
     <div className='bg-[#0D0D0D] w-screen h-screen flex    '>
@@ -21,8 +21,10 @@ const App = () => {
         <Route path='/movie' element={<Movie />}/>
         <Route
           path='/movie/details/:id'
-          element ={<Moviedetails />} 
-          />
+          element ={<Moviedetails />} >
+            <Route path='/movie/details/:id/trailer' element ={<Trailer />}/>
+          </Route>
+          
           
       
           
