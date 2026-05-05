@@ -31,8 +31,10 @@ const App = () => {
         <Route path='/tv' element={<Tvshows />}/>
         <Route
           path='/tv/details/:id'
-          element ={<Tvdetails />} 
-          />
+          element ={<Tvdetails />} >
+            <Route path='/tv/details/:id/trailer' element ={<Trailer />}/>
+          </Route>
+        
           
           
         <Route path='/person' element={<People />}/>

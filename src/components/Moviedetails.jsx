@@ -124,7 +124,7 @@ const Moviedetails = () => {
             {info?.watchproviders?.flatrate?.map((w) => (
               <img
                 key={w.provider_id}
-                className="w-[50px] rounded-md"
+                className="w-12.5 rounded-md"
                 src={`https://image.tmdb.org/t/p/original/${w.logo_path}`}
                 alt=""
               />
