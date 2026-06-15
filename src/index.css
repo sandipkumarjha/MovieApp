@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* primary - #1F1E24 */
+/* secondary - #6556CD */
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* REMOVED: overflow: hidden — this was killing ALL page scrolling globally.
+     Each route component now manages its own scroll context via overflow-y-auto. */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1F1E24;
+}
+::-webkit-scrollbar-thumb {
+  background: #6556CD;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8b7ddf;
+}
+
+/* Custom select / dropdown */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0;
+  background: rgb(59, 59, 59);
+  background-image: none;
+  padding: 0 1em;
+  border-radius: 50rem;
+  color: rgb(175, 174, 174);
+  cursor: pointer;
+  font-size: 0.9em;
+  font-family: "open sans", sans-serif;
+  width: 100%;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+.select {
+  position: relative;
+  display: flex;
+  width: 9em;
+  border-radius: 50rem;
+  height: 2.6em;
+  line-height: 2.6;
+  overflow: hidden;
+  background: rgb(59, 59, 59);
+  flex-shrink: 0;
+}
+
+.select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 0.8em;
+  cursor: pointer;
+  pointer-events: none;
+  color: gray;
+  transition: 0.4s all ease;
+  background: rgb(59, 59, 59);
+  font-size: 0.75em;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.select:hover::after {
+  color: #6556CD;
+}
+
+/* Smaller select on mobile */
+@media (max-width: 640px) {
+  .select {
+    width: 7.5em;
+    height: 2.2em;
+    line-height: 2.2;
+    font-size: 0.85em;
+  }
+}
