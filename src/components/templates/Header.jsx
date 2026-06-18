@@ -23,14 +23,13 @@ const Header = ({
 
   return (
     <div
-      style={{
-        background: `linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.3)),
-        url(https://image.tmdb.org/t/p/original/${
-          data?.backdrop_path || data?.profile_path
-        })`,
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
-      }}
+    style={{
+      backgroundImage: `linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.3)),
+      url(https://image.tmdb.org/t/p/original/${data?.backdrop_path || data?.profile_path})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center top",
+      backgroundRepeat: "no-repeat",
+    }}
       className={`
         relative
         w-full
