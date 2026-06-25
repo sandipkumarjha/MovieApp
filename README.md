@@ -1,16 +1,97 @@
-# React + Vite
+# 🎬 Nexa — Movie Discovery Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Nexa is a modern movie discovery platform built using React and the TMDB API. It allows users to explore trending movies, TV shows, and popular personalities while providing detailed information, trailers, recommendations, and a personalized watchlist experience.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* Discover trending movies and TV shows
+* Browse popular content across multiple categories
+* Search movies, TV shows, and people in real time
+* View detailed information including ratings, genres, release dates, and overviews
+* Watch trailers directly within the application
+* Personalized watchlist using Local Storage
+* Similar and recommended content suggestions
+* Fully responsive design for desktop, tablet, and mobile devices
+* Fast and optimized user experience
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
 
-## Expanding the ESLint configuration
+* React.js
+* React Router DOM
+* Redux Toolkit
+* Tailwind CSS
+* Axios
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### APIs
+
+* TMDB (The Movie Database) API
+
+### Deployment
+
+* Vercel
+
+## Project Structure
+
+```bash
+src/
+├── components/
+├── templates/
+├── store/
+├── utils/
+├── App.jsx
+└── main.jsx
+```
+
+## Key Highlights
+
+* Dynamic routing for movie, TV show, and person detail pages
+* Global state management using Redux
+* API-driven architecture
+* Responsive UI with modern design principles
+* Watchlist persistence using browser storage
+* Optimized search experience with debouncing
+* Reusable and scalable component architecture
+
+## Installation
+
+```bash
+git clone <repository-url>
+
+cd nexa
+
+npm install
+
+npm run dev
+```
+
+## Environment Variables
+
+Create a `.env` file and add your TMDB API credentials.
+
+```env
+VITE_TMDB_API_KEY=your_api_key
+```
+
+## Future Improvements
+
+* User Authentication
+* Cloud-Synced Watchlist
+* Movie Reviews & Ratings
+* Personalized Recommendations
+* Dark/Light Theme
+* PWA Support
+
+## Live Demo
+
+https://movie-e7u2qqjb3-kumarjhasandip30-3185s-projects.vercel.app/
+
+<img width="1893" height="1071" alt="Screenshot 2026-06-15 234313" src="https://github.com/user-attachments/assets/905e9da4-e188-4e61-b814-62192379fd8a" />
+
+
+## Author
+
+Sandip Kumar Jha
+
+Built as a practical frontend project focused on API integration, state management, responsive design, and modern React development practices.
