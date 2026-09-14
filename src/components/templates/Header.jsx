@@ -5,10 +5,9 @@ const Header = ({
   data,
   nextSlide,
   prevSlide,
-  currentIndex,
-  totalSlides,
+  currentIndex = 0,
+  totalSlides = 0,
 }) => {
-
   const [fade, setFade] = useState(true);
 
   useEffect(() => {
@@ -23,13 +22,18 @@ const Header = ({
 
   return (
     <div
-    style={{
-      backgroundImage: `linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.3)),
-      url(https://image.tmdb.org/t/p/original/${data?.backdrop_path || data?.profile_path})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center top",
-      backgroundRepeat: "no-repeat",
-    }}
+      style={{
+        backgroundImage: `linear-gradient(
+          rgba(0,0,0,0.85),
+          rgba(0,0,0,0.3)
+        ),
+        url(https://image.tmdb.org/t/p/original/${
+          data?.backdrop_path || data?.profile_path
+        })`,
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+      }}
       className={`
         relative
         w-full
@@ -37,21 +41,28 @@ const Header = ({
         flex
         flex-col
         justify-end
-        p-[10%]
+        px-4 sm:px-6 md:px-[10%]
+        py-10 md:py-[10%]
         transition-opacity
         duration-700
         ${fade ? "opacity-100" : "opacity-0"}
       `}
     >
-
       {/* Previous Button */}
       <button
         onClick={prevSlide}
         className="
-          absolute left-4 top-1/2 -translate-y-1/2
-          z-20 bg-black/40 hover:bg-black/70
-          text-white w-12 h-12 rounded-full
-          text-2xl
+          absolute
+          left-3 sm:left-4
+          top-1/2
+          -translate-y-1/2
+          z-20
+          bg-black/40
+          hover:bg-black/70
+          text-white
+          w-10 h-10 sm:w-12 sm:h-12
+          rounded-full
+          text-xl sm:text-2xl
         "
       >
         ❮
@@ -61,21 +72,36 @@ const Header = ({
       <button
         onClick={nextSlide}
         className="
-          absolute right-4 top-1/2 -translate-y-1/2
-          z-20 bg-black/40 hover:bg-black/70
-          text-white w-12 h-12 rounded-full
-          text-2xl
+          absolute
+          right-3 sm:right-4
+          top-1/2
+          -translate-y-1/2
+          z-20
+          bg-black/40
+          hover:bg-black/70
+          text-white
+          w-10 h-10 sm:w-12 sm:h-12
+          rounded-full
+          text-xl sm:text-2xl
         "
       >
         ❯
       </button>
 
       {/* Title */}
-      <h1 className="
-        w-full md:w-[80%] lg:w-[70%]
-        text-2xl sm:text-3xl md:text-4xl lg:text-5xl
-        text-white font-bold
-      ">
+      <h1
+        className="
+          w-full
+          md:w-[80%]
+          lg:w-[70%]
+          text-2xl
+          sm:text-3xl
+          md:text-4xl
+          lg:text-5xl
+          text-white
+          font-bold
+        "
+      >
         {data?.name ||
           data?.title ||
           data?.original_name ||
@@ -83,11 +109,17 @@ const Header = ({
       </h1>
 
       {/* Description */}
-      <p className="
-        text-zinc-200 mt-3
-        text-sm sm:text-base
-        w-full md:w-[75%] lg:w-[60%]
-      ">
+      <p
+        className="
+          text-zinc-200
+          mt-3
+          text-sm
+          sm:text-base
+          w-full
+          md:w-[75%]
+          lg:w-[60%]
+        "
+      >
         {data?.overview
           ? data.overview.slice(0, 250)
           : "No description available"}
@@ -102,7 +134,7 @@ const Header = ({
       </p>
 
       {/* Meta */}
-      <p className="text-zinc-300 mt-2 flex gap-3">
+      <p className="text-zinc-300 mt-2 flex flex-wrap gap-3 items-center">
         <span>{data?.release_date || "Releases Soon"}</span>
 
         {data?.media_type && (
@@ -116,11 +148,14 @@ const Header = ({
       <Link
         to={`/${data?.media_type}/details/${data?.id}/trailer`}
         className="
-          inline-flex items-center
+          inline-flex
+          items-center
           bg-[#6556CD]
           hover:bg-[#574bc4]
-          text-white font-semibold
-          px-6 py-3
+          text-white
+          font-semibold
+          px-5 sm:px-6
+          py-2.5 sm:py-3
           rounded-full
           mt-4
           w-fit
@@ -129,30 +164,37 @@ const Header = ({
         Watch Trailer
       </Link>
 
-      {/* Dots */}
-      <div className="
-        absolute
-        bottom-6
-        left-1/2
-        -translate-x-1/2
-        flex gap-2
-        z-20
-      ">
-        {[...Array(totalSlides)].map((_, index) => (
-          <button
-            key={index}
-            className={`
-              w-3 h-3 rounded-full transition-all
-              ${
-                currentIndex === index
-                  ? "bg-white scale-125"
-                  : "bg-gray-500"
-              }
-            `}
-          />
-        ))}
-      </div>
-
+      {/* Carousel Dots */}
+      {totalSlides > 0 && (
+        <div
+          className="
+            absolute
+            bottom-4 sm:bottom-6
+            left-1/2
+            -translate-x-1/2
+            flex
+            gap-2
+            z-20
+          "
+        >
+          {[...Array(totalSlides)].map((_, index) => (
+            <button
+              key={index}
+              aria-label={`Go to slide ${index + 1}`}
+              className={`
+                w-2.5 h-2.5 sm:w-3 sm:h-3
+                rounded-full
+                transition-all
+                ${
+                  currentIndex === index
+                    ? "bg-white scale-125"
+                    : "bg-gray-500"
+                }
+              `}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

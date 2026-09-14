@@ -65,7 +65,7 @@ const Moviedetails = () => {
         backgroundSize: "cover",
         backgroundPosition: "top center",
       }}
-      className="relative min-h-screen px-[10%] text-white"
+      className="relative min-h-screen px-4 sm:px-6 md:px-[10%] text-white"
     >
 
       {/* 🔹 NAVBAR */}
@@ -96,11 +96,11 @@ const Moviedetails = () => {
       </nav>
 
       {/* 🔹 MAIN */}
-      <div className="flex gap-10">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-10">
 
         {/* 🎬 POSTER */}
         <img
-          className="shadow-lg h-[60vh] object-cover rounded"
+          className="mx-auto md:mx-0 h-[40vh] sm:h-[50vh] md:h-[60vh] w-auto max-w-full shadow-lg object-cover rounded"
           src={`https://image.tmdb.org/t/p/original/${
             info?.detail?.poster_path || info?.detail?.backdrop_path
           }`}
@@ -108,14 +108,14 @@ const Moviedetails = () => {
         />
 
         {/* 📄 DETAILS */}
-        <div className="w-[70%]">
+        <div className="w-full md:w-[70%]">
 
           <h1 className="text-4xl font-bold">
             {info?.detail?.title || info?.detail?.name}
           </h1>
 
           {/* ⭐ Rating */}
-          <div className="flex items-center gap-5 mt-3 text-zinc-300">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-5 mt-3 text-zinc-300">
             <span>⭐ {info?.detail?.vote_average?.toFixed(1)}</span>
 
             {info?.detail?.runtime && (
@@ -143,29 +143,21 @@ const Moviedetails = () => {
           </p>
 
           {/* 🎬 TRAILER BUTTON (ROUTER BASED) */}
-          <Link
-            to="trailer"
-            className="inline-flex items-center gap-2 bg-[#6556CD] px-5 py-2 rounded hover:bg-[#574bc4]"
-          >
-            <i className="ri-play-fill"></i>
-            Watch Trailer
-          </Link>
-  <button
-  onClick={addToWatchlist}
-  className="
-  
-  bg-green-600
-  hover:bg-green-700
-  ml-10
-  text-white
-  px-6 py-2
-  rounded-s-sm
-  mt-5
-  
-  "
->
-  + Add To Watchlist
-</button>
+          <div className="flex flex-wrap items-center gap-4 mt-5">
+            <Link
+              to="trailer"
+              className="inline-flex items-center gap-2 bg-[#6556CD] px-5 py-2 rounded hover:bg-[#574bc4]"
+            >
+              <i className="ri-play-fill"></i>
+              Watch Trailer
+            </Link>
+            <button
+              onClick={addToWatchlist}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-s-sm"
+            >
+              + Add To Watchlist
+            </button>
+          </div>
 
           {/* 🎥 WATCH PROVIDERS */}
           <div className="mt-10 flex gap-3 flex-wrap">
