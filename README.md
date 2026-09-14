@@ -85,7 +85,7 @@ VITE_TMDB_API_KEY=your_api_key
 
 ## Live Demo
 
-movie-app-aiap-bw0wrsgc6-kumarjhasandip30-3185s-projects.vercel.app
+https://movie-app-aiap.vercel.app/
 
 <img width="1893" height="1071" alt="Screenshot 2026-06-15 234313" src="https://github.com/user-attachments/assets/905e9da4-e188-4e61-b814-62192379fd8a" />
 
