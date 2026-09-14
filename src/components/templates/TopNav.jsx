@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import noimage from "/noimage.webp";
+import { useAuth } from "../../hooks/useAuth";
 
 const TopNav = () => {
   const [query, setQuery] = useState("");
   const [searches, setSearches] = useState([]);
   const wrapperRef = useRef(null);
+
+  // Auth
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Debounced search
   useEffect(() => {
@@ -14,35 +19,55 @@ const TopNav = () => {
       setSearches([]);
       return;
     }
+
     const delay = setTimeout(() => {
       getSearches();
     }, 400);
+
     return () => clearTimeout(delay);
   }, [query]);
 
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target)
+      ) {
         setSearches([]);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
+  // Search TMDB
   const getSearches = async () => {
     try {
-      const { data } = await axios.get(`/search/multi`, { params: { query } });
+      const { data } = await axios.get(`/search/multi`, {
+        params: { query },
+      });
+
       setSearches(data.results || []);
     } catch (err) {
       console.log(err);
     }
   };
 
+  // Clear search
   const clearSearch = () => {
     setQuery("");
     setSearches([]);
+  };
+
+  // Logout
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   return (
@@ -53,7 +78,7 @@ const TopNav = () => {
       {/* Search icon */}
       <i className="text-xl text-zinc-400 ri-search-2-line flex-shrink-0"></i>
 
-      {/* Input */}
+      {/* Search input */}
       <input
         onChange={(e) => setQuery(e.target.value)}
         value={query}
@@ -83,6 +108,61 @@ const TopNav = () => {
         </button>
       )}
 
+      {/* Authentication */}
+      {user ? (
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* User email */}
+          <span className="text-zinc-300 text-sm hidden sm:block">
+            {user.email}
+          </span>
+
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="
+              bg-red-500
+              hover:bg-red-600
+              text-white
+              px-3 sm:px-4
+              py-2
+              rounded-lg
+              text-sm
+              transition
+            "
+          >
+            Logout
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Login */}
+          <Link
+            to="/login"
+            className="text-white hover:text-[#6556CD] text-sm sm:text-base"
+          >
+            Login
+          </Link>
+
+          {/* Sign Up */}
+          <Link
+            to="/signup"
+            className="
+              bg-[#6556CD]
+              hover:bg-[#574bc4]
+              text-white
+              px-3 sm:px-4
+              py-2
+              rounded-lg
+              text-sm
+              sm:text-base
+              whitespace-nowrap
+            "
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
+
       {/* Dropdown results */}
       {searches.length > 0 && (
         <div
@@ -110,22 +190,43 @@ const TopNav = () => {
               }/details/${s.id}`}
               key={s.id}
               onClick={clearSearch}
-              className="flex items-center gap-3 p-3 border-b border-zinc-800 hover:bg-zinc-800 transition-colors"
+              className="
+                flex items-center gap-3
+                p-3
+                border-b border-zinc-800
+                hover:bg-zinc-800
+                transition-colors
+              "
             >
               <img
-                className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded flex-shrink-0"
+                className="
+                  w-10 h-10
+                  sm:w-12 sm:h-12
+                  object-cover
+                  rounded
+                  flex-shrink-0
+                "
                 src={
                   s.poster_path || s.profile_path
-                    ? `https://image.tmdb.org/t/p/w200${s.poster_path || s.profile_path}`
+                    ? `https://image.tmdb.org/t/p/w200${
+                        s.poster_path || s.profile_path
+                      }`
                     : noimage
                 }
                 alt=""
               />
+
               <div className="min-w-0">
                 <span className="text-zinc-200 text-sm sm:text-base block truncate">
-                  {s.name || s.title || s.original_name || s.original_title}
+                  {s.name ||
+                    s.title ||
+                    s.original_name ||
+                    s.original_title}
                 </span>
-                <span className="text-zinc-500 text-xs capitalize">{s.media_type}</span>
+
+                <span className="text-zinc-500 text-xs capitalize">
+                  {s.media_type}
+                </span>
               </div>
             </Link>
           ))}
