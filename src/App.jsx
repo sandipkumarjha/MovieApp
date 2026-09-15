@@ -15,6 +15,7 @@ import Signup from './components/auth/Signup'
 import Login from './components/auth/Login'
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Profile from "./components/Profile";
+import Favorites from "./components/Favorites";
 
 
 const App = () => {
@@ -47,6 +48,14 @@ const App = () => {
   element={
     <ProtectedRoute>
       <Profile />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/favorites"
+  element={
+    <ProtectedRoute>
+      <Favorites />
     </ProtectedRoute>
   }
 />

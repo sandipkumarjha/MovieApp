@@ -139,12 +139,25 @@ const Home = () => {
         );
 
         // Sort by recommendation score
-        const filteredRecommendations = uniqueMovies
-          .sort(
-            (a, b) =>
-              b.recommendationScore - a.recommendationScore
-          )
-          .slice(0, 12);
+       // Calculate final recommendation score
+const rankedRecommendations = uniqueMovies.map((movie) => {
+  const recommendationScore = movie.recommendationScore || 0;
+  const ratingScore = movie.vote_average || 0;
+
+  // Recommendation frequency has more importance than rating
+  const finalScore =
+    recommendationScore * 10 + ratingScore;
+
+  return {
+    ...movie,
+    finalScore,
+  };
+});
+
+// Sort by final recommendation score
+const filteredRecommendations = rankedRecommendations
+  .sort((a, b) => b.finalScore - a.finalScore)
+  .slice(0, 12);
 
         setRecommendations(filteredRecommendations);
       } catch (error) {
@@ -238,25 +251,49 @@ const Home = () => {
           </div>
 
           {/* Personalized Recommendations */}
-          {user && recommendations.length > 0 && (
-            <div className="mt-8">
+          {user && (
+  <div className="mt-8">
 
-              <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 mb-2">
+    {recommendationLoading ? (
+      <div className="px-4 sm:px-6 md:px-8">
+        <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-semibold">
+          Recommended For You
+        </h1>
 
-                <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-semibold">
-                  Recommended For You
-                </h1>
+        <p className="text-zinc-500 text-sm mt-2">
+          Finding movies you might like...
+        </p>
+      </div>
+    ) : recommendations.length > 0 ? (
+      <>
+        <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 mb-2">
 
-                <span className="text-zinc-500 text-sm">
-                  Based on your watchlist
-                </span>
+          <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-semibold">
+            Recommended For You
+          </h1>
 
-              </div>
+          <span className="text-zinc-500 text-sm">
+            Based on your watchlist
+          </span>
 
-              <HorizontalCards data={recommendations} />
+        </div>
 
-            </div>
-          )}
+        <HorizontalCards data={recommendations} />
+      </>
+    ) : (
+      <div className="px-4 sm:px-6 md:px-8">
+        <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-semibold">
+          Recommended For You
+        </h1>
+
+        <p className="text-zinc-500 text-sm mt-2">
+          Add some movies to your watchlist to get personalized recommendations.
+        </p>
+      </div>
+    )}
+
+  </div>
+)}
 
         </div>
 

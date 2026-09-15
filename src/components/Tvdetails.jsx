@@ -25,6 +25,10 @@ const Tvdetails = () => {
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
 
+  // FAVORITES
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+
   // ==========================================
   // LOAD TV DETAILS
   // ==========================================
@@ -66,6 +70,35 @@ const Tvdetails = () => {
   }, [user, info]);
 
   // ==========================================
+  // CHECK IF TV SHOW IS FAVORITE
+  // ==========================================
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!user || !info?.detail?.id) {
+        setIsFavorite(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("movie_id", info.detail.id)
+        .eq("media_type", "tv")
+        .maybeSingle();
+
+      if (error) {
+        console.error("TV Favorite check error:", error);
+        return;
+      }
+
+      setIsFavorite(!!data);
+    };
+
+    checkFavorite();
+  }, [user, info]);
+
+  // ==========================================
   // ADD TV SHOW TO WATCHLIST
   // ==========================================
   const addToWatchlist = async () => {
@@ -96,8 +129,6 @@ const Tvdetails = () => {
       media_type: "tv",
     };
 
-    console.log("TV WATCHLIST:", tvShow);
-
     const { error } = await supabase
       .from("watchlist")
       .insert(tvShow);
@@ -109,6 +140,68 @@ const Tvdetails = () => {
     }
 
     setWatchlistLoading(false);
+  };
+
+  // ==========================================
+  // TOGGLE TV SHOW FAVORITE
+  // ==========================================
+  const toggleFavorite = async () => {
+    // User is not logged in
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    // TV data not available
+    if (!info?.detail?.id) {
+      console.error("TV information is not available");
+      return;
+    }
+
+    setFavoriteLoading(true);
+
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        const { error } = await supabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("movie_id", info.detail.id)
+          .eq("media_type", "tv");
+
+        if (error) {
+          console.error("TV FAVORITE DELETE ERROR:", error);
+          return;
+        }
+
+        setIsFavorite(false);
+      } else {
+        // Add to favorites
+        const favorite = {
+          user_id: user.id,
+          movie_id: info.detail.id,
+          title: info.detail.name || info.detail.title,
+          poster_path: info.detail.poster_path,
+          media_type: "tv",
+        };
+
+        const { error } = await supabase
+          .from("favorites")
+          .insert(favorite);
+
+        if (error) {
+          console.error("TV FAVORITE INSERT ERROR:", error);
+          return;
+        }
+
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("TV Favorite error:", error);
+    } finally {
+      setFavoriteLoading(false);
+    }
   };
 
   // ==========================================
@@ -140,6 +233,7 @@ const Tvdetails = () => {
       {/* ==========================================
           NAVBAR
       ========================================== */}
+
       <nav
         className="
           flex gap-4 sm:gap-6 items-center
@@ -171,6 +265,7 @@ const Tvdetails = () => {
             "
           >
             <i className="ri-external-link-fill"></i>
+
             <span className="hidden sm:inline text-sm">
               Website
             </span>
@@ -192,6 +287,7 @@ const Tvdetails = () => {
       {/* ==========================================
           MAIN CONTENT
       ========================================== */}
+
       <div
         className="
           flex flex-col md:flex-row
@@ -201,6 +297,7 @@ const Tvdetails = () => {
         "
       >
         {/* POSTER */}
+
         <div className="flex justify-center md:justify-start flex-shrink-0">
           <img
             className="
@@ -228,9 +325,11 @@ const Tvdetails = () => {
         </div>
 
         {/* DETAILS */}
+
         <div className="flex-1 min-w-0">
 
           {/* TITLE */}
+
           <h1
             className="
               text-2xl sm:text-3xl md:text-4xl lg:text-5xl
@@ -244,6 +343,7 @@ const Tvdetails = () => {
           </h1>
 
           {/* RATING / DATE */}
+
           <div
             className="
               flex flex-wrap
@@ -276,6 +376,7 @@ const Tvdetails = () => {
           </div>
 
           {/* GENRES */}
+
           <div className="flex gap-2 mt-4 flex-wrap">
             {info?.detail?.genres?.map((genre) => (
               <span
@@ -293,6 +394,7 @@ const Tvdetails = () => {
           </div>
 
           {/* OVERVIEW */}
+
           <p
             className="
               mt-5
@@ -308,9 +410,11 @@ const Tvdetails = () => {
           {/* ==========================================
               ACTION BUTTONS
           ========================================== */}
+
           <div className="flex flex-wrap items-center gap-3 mt-5">
 
             {/* TRAILER */}
+
             <Link
               to="trailer"
               className="
@@ -335,6 +439,7 @@ const Tvdetails = () => {
             </Link>
 
             {/* WATCHLIST */}
+
             <button
               onClick={addToWatchlist}
               disabled={
@@ -362,11 +467,50 @@ const Tvdetails = () => {
                 ? "✓ In Watchlist"
                 : "+ Add To Watchlist"}
             </button>
+
+            {/* FAVORITES */}
+
+            <button
+              onClick={toggleFavorite}
+              disabled={favoriteLoading}
+              className={`
+                inline-flex
+                items-center
+                gap-2
+                px-5 sm:px-6
+                py-2.5 sm:py-3
+                rounded-full
+                font-semibold
+                text-sm sm:text-base
+                transition
+                duration-200
+                ${
+                  isFavorite
+                    ? "bg-pink-600 hover:bg-pink-700 text-white"
+                    : "bg-zinc-700 hover:bg-pink-600 text-white"
+                }
+              `}
+            >
+              <i
+                className={
+                  isFavorite
+                    ? "ri-heart-fill text-pink-200"
+                    : "ri-heart-line"
+                }
+              ></i>
+
+              {favoriteLoading
+                ? "Saving..."
+                : isFavorite
+                ? "Favorited"
+                : "Add to Favorites"}
+            </button>
           </div>
 
           {/* ==========================================
               WATCH PROVIDERS
           ========================================== */}
+
           {info?.watchproviders?.flatrate?.length > 0 && (
             <div className="mt-6">
               <p
@@ -407,6 +551,7 @@ const Tvdetails = () => {
       {/* ==========================================
           RECOMMENDATIONS
       ========================================== */}
+
       <div
         className="
           px-4 sm:px-8

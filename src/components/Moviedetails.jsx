@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate, Outlet, Link } from "react-router-dom";
 
-import { asyncloadmovies, removemovie } from "../../store/actions/MovieAction";
+import {
+  asyncloadmovies,
+  removemovie,
+} from "../../store/actions/MovieAction";
+
 import Loading from "./Loading";
 import HorizontalCards from "./templates/HorizontalCards";
 
@@ -22,12 +26,24 @@ const Moviedetails = () => {
   // Auth
   const { user } = useAuth();
 
+  // ==========================================
+  // WATCHLIST STATE
+  // ==========================================
+
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
 
   // ==========================================
+  // FAVORITE STATE
+  // ==========================================
+
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+
+  // ==========================================
   // LOAD MOVIE DETAILS
   // ==========================================
+
   useEffect(() => {
     dispatch(asyncloadmovies(id));
 
@@ -39,6 +55,7 @@ const Moviedetails = () => {
   // ==========================================
   // CHECK WATCHLIST
   // ==========================================
+
   useEffect(() => {
     const checkWatchlist = async () => {
       if (!user || !info?.detail?.id) {
@@ -66,8 +83,39 @@ const Moviedetails = () => {
   }, [user, info]);
 
   // ==========================================
+  // CHECK FAVORITE
+  // ==========================================
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!user || !info?.detail?.id) {
+        setIsFavorite(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("movie_id", info.detail.id)
+        .eq("media_type", "movie")
+        .maybeSingle();
+
+      if (error) {
+        console.error("Favorite check error:", error);
+        return;
+      }
+
+      setIsFavorite(!!data);
+    };
+
+    checkFavorite();
+  }, [user, info]);
+
+  // ==========================================
   // ADD TO WATCHLIST
   // ==========================================
+
   const addToWatchlist = async () => {
     if (!user) {
       navigate("/login");
@@ -107,8 +155,78 @@ const Moviedetails = () => {
   };
 
   // ==========================================
+  // TOGGLE FAVORITE
+  // ==========================================
+
+  const toggleFavorite = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    if (!info?.detail?.id) {
+      console.error("Movie information is not available");
+      return;
+    }
+
+    setFavoriteLoading(true);
+
+    try {
+      // ========================================
+      // REMOVE FROM FAVORITES
+      // ========================================
+
+      if (isFavorite) {
+        const { error } = await supabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("movie_id", info.detail.id)
+          .eq("media_type", "movie");
+
+        if (error) {
+          console.error("FAVORITE DELETE ERROR:", error);
+          return;
+        }
+
+        setIsFavorite(false);
+      }
+
+      // ========================================
+      // ADD TO FAVORITES
+      // ========================================
+
+      else {
+        const favorite = {
+          user_id: user.id,
+          movie_id: info.detail.id,
+          title: info.detail.title || info.detail.name,
+          poster_path: info.detail.poster_path,
+          media_type: "movie",
+        };
+
+        const { error } = await supabase
+          .from("favorites")
+          .insert(favorite);
+
+        if (error) {
+          console.error("FAVORITE INSERT ERROR:", error);
+          return;
+        }
+
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("Favorite error:", error);
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
+  // ==========================================
   // LOADING
   // ==========================================
+
   if (!info) {
     return <Loading />;
   }
@@ -116,6 +234,7 @@ const Moviedetails = () => {
   // ==========================================
   // BACKGROUND
   // ==========================================
+
   const bg =
     info?.detail?.backdrop_path ||
     info?.detail?.poster_path;
@@ -131,8 +250,13 @@ const Moviedetails = () => {
       }}
       className="relative min-h-screen px-4 sm:px-6 md:px-[10%] text-white"
     >
-      {/* NAVBAR */}
+
+      {/* ==========================================
+          NAVBAR
+      ========================================== */}
+
       <nav className="h-[10vh] flex gap-10 items-center text-xl text-zinc-300">
+
         <button
           onClick={() => navigate(-1)}
           className="hover:text-[#6556CD]"
@@ -159,12 +283,19 @@ const Moviedetails = () => {
             IMDb
           </a>
         )}
+
       </nav>
 
-      {/* MAIN */}
+      {/* ==========================================
+          MAIN
+      ========================================== */}
+
       <div className="flex flex-col md:flex-row gap-6 md:gap-10">
 
-        {/* POSTER */}
+        {/* ========================================
+            POSTER
+        ======================================== */}
+
         <img
           className="mx-auto md:mx-0 h-[40vh] sm:h-[50vh] md:h-[60vh] w-auto max-w-full shadow-lg object-cover rounded"
           src={
@@ -172,18 +303,29 @@ const Moviedetails = () => {
               ? `https://image.tmdb.org/t/p/original/${info.detail.poster_path}`
               : "/noimage.webp"
           }
-          alt={info?.detail?.title || "Movie poster"}
+          alt={
+            info?.detail?.title ||
+            "Movie poster"
+          }
         />
 
-        {/* DETAILS */}
+        {/* ========================================
+            DETAILS
+        ======================================== */}
+
         <div className="w-full md:w-[70%]">
 
           <h1 className="text-4xl font-bold">
-            {info?.detail?.title || info?.detail?.name}
+            {info?.detail?.title ||
+              info?.detail?.name}
           </h1>
 
-          {/* RATING */}
+          {/* ======================================
+              RATING
+          ====================================== */}
+
           <div className="flex flex-wrap items-center gap-3 sm:gap-5 mt-3 text-zinc-300">
+
             <span>
               ⭐{" "}
               {info?.detail?.vote_average
@@ -192,16 +334,25 @@ const Moviedetails = () => {
             </span>
 
             {info?.detail?.runtime && (
-              <span>{info.detail.runtime} min</span>
+              <span>
+                {info.detail.runtime} min
+              </span>
             )}
 
             {info?.detail?.release_date && (
-              <span>{info.detail.release_date}</span>
+              <span>
+                {info.detail.release_date}
+              </span>
             )}
+
           </div>
 
-          {/* GENRES */}
+          {/* ======================================
+              GENRES
+          ====================================== */}
+
           <div className="flex gap-3 mt-4 flex-wrap">
+
             {info?.detail?.genres?.map((genre) => (
               <span
                 key={genre.id}
@@ -210,15 +361,24 @@ const Moviedetails = () => {
                 {genre.name}
               </span>
             ))}
+
           </div>
 
-          {/* OVERVIEW */}
+          {/* ======================================
+              OVERVIEW
+          ====================================== */}
+
           <p className="mt-5 text-zinc-300 leading-relaxed mb-6">
             {info?.detail?.overview}
           </p>
 
-          {/* BUTTONS */}
+          {/* ======================================
+              BUTTONS
+          ====================================== */}
+
           <div className="flex flex-wrap items-center gap-4 mt-5">
+
+            {/* Trailer */}
 
             <Link
               to="trailer"
@@ -228,9 +388,14 @@ const Moviedetails = () => {
               Watch Trailer
             </Link>
 
+            {/* Watchlist */}
+
             <button
               onClick={addToWatchlist}
-              disabled={watchlistLoading || isInWatchlist}
+              disabled={
+                watchlistLoading ||
+                isInWatchlist
+              }
               className={`text-white px-6 py-2 rounded transition ${
                 isInWatchlist
                   ? "bg-zinc-600 cursor-not-allowed"
@@ -243,23 +408,67 @@ const Moviedetails = () => {
                 ? "✓ In Watchlist"
                 : "+ Add To Watchlist"}
             </button>
+
+            {/* Favorite */}
+
+            <button
+  onClick={toggleFavorite}
+  disabled={favoriteLoading}
+  className={`
+    inline-flex items-center gap-2
+    px-6 py-2
+    rounded-full
+    font-semibold
+    transition
+    ${
+      isFavorite
+        ? "bg-pink-600 hover:bg-pink-700 text-white"
+        : "bg-zinc-700 hover:bg-pink-600 text-white"
+    }
+  `}
+>
+  <i
+    className={
+      isFavorite
+        ? "ri-heart-fill text-pink-300"
+        : "ri-heart-line"
+    }
+  ></i>
+
+  {favoriteLoading
+    ? "Saving..."
+    : isFavorite
+    ? "Favorited"
+    : "Add to Favorites"}
+</button>
+
           </div>
 
-          {/* WATCH PROVIDERS */}
+          {/* ======================================
+              WATCH PROVIDERS
+          ====================================== */}
+
           {info?.watchproviders?.flatrate?.length > 0 && (
             <div className="mt-10 flex gap-3 flex-wrap">
-              {info.watchproviders.flatrate.map((provider) => (
-                <img
-                  key={provider.provider_id}
-                  className="w-10 h-10 rounded-md"
-                  src={`https://image.tmdb.org/t/p/original/${provider.logo_path}`}
-                  alt={provider.provider_name}
-                />
-              ))}
+
+              {info.watchproviders.flatrate.map(
+                (provider) => (
+                  <img
+                    key={provider.provider_id}
+                    className="w-10 h-10 rounded-md"
+                    src={`https://image.tmdb.org/t/p/original/${provider.logo_path}`}
+                    alt={provider.provider_name}
+                  />
+                )
+              )}
+
             </div>
           )}
 
-          {/* RECOMMENDATIONS */}
+          {/* ======================================
+              RECOMMENDATIONS
+          ====================================== */}
+
           <hr className="mt-10 mb-5" />
 
           <h2 className="text-2xl font-semibold mb-4">
@@ -273,10 +482,12 @@ const Moviedetails = () => {
                 : info?.similar || []
             }
           />
+
         </div>
       </div>
 
       <Outlet />
+
     </div>
   );
 };
