@@ -17,17 +17,43 @@ const Sidenav = () => {
     } else {
       document.body.style.overflow = ''
     }
+
     return () => {
       document.body.style.overflow = ''
     }
   }, [isOpen])
 
   const navLinks = [
-    { to: '/trending', label: 'Trending', icon: 'ri-fire-fill', color: 'text-orange-400' },
-    { to: '/popular', label: 'Popular', icon: 'ri-bard-fill', color: 'text-yellow-400' },
-    { to: '/movie', label: 'Movies', icon: 'ri-movie-2-ai-fill', color: 'text-teal-400' },
-    { to: '/tv', label: 'TV Shows', icon: 'ri-slideshow-3-fill', color: 'text-zinc-400' },
-    { to: '/person', label: 'People', icon: 'ri-team-fill', color: 'text-zinc-400' },
+    {
+      to: '/trending',
+      label: 'Trending',
+      icon: 'ri-fire-fill',
+      color: 'text-orange-400'
+    },
+    {
+      to: '/popular',
+      label: 'Popular',
+      icon: 'ri-bard-fill',
+      color: 'text-yellow-400'
+    },
+    {
+      to: '/movie',
+      label: 'Movies',
+      icon: 'ri-movie-2-ai-fill',
+      color: 'text-teal-400'
+    },
+    {
+      to: '/tv',
+      label: 'TV Shows',
+      icon: 'ri-slideshow-3-fill',
+      color: 'text-zinc-400'
+    },
+    {
+      to: '/person',
+      label: 'People',
+      icon: 'ri-team-fill',
+      color: 'text-zinc-400'
+    },
   ]
 
   const isActive = (path) => location.pathname === path
@@ -63,6 +89,7 @@ const Sidenav = () => {
           lg:translate-x-0 lg:static lg:z-auto
         `}
       >
+
         {/* Close button — mobile only */}
         <button
           onClick={() => setIsOpen(false)}
@@ -76,57 +103,115 @@ const Sidenav = () => {
         <div className="px-8 pt-8 pb-4">
           <Link to="/" className="flex items-center gap-2">
             <i className="ri-tv-fill text-[#6556CD] text-2xl"></i>
-            <h1 className="text-2xl text-white font-bold tracking-wider">NEXA</h1>
+            <h1 className="text-2xl text-white font-bold tracking-wider">
+              NEXA
+            </h1>
           </Link>
         </div>
 
         {/* Nav links */}
         <nav className="flex flex-col px-4 gap-1 flex-1 overflow-y-auto">
+
           <h2 className="text-zinc-500 font-semibold text-xs uppercase tracking-widest px-4 mt-6 mb-3">
             New Feeds
           </h2>
-          
 
+          {/* Main navigation */}
           {navLinks.map(({ to, label, icon, color }) => (
             <Link
               key={to}
               to={to}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200
-                ${isActive(to)
-                  ? 'bg-[#6556CD] text-white shadow-lg'
-                  : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+                flex items-center gap-3 px-4 py-3 rounded-xl
+                font-medium transition-all duration-200
+                ${
+                  isActive(to)
+                    ? 'bg-[#6556CD] text-white shadow-lg'
+                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
                 }
               `}
             >
-              <i className={`${icon} ${isActive(to) ? 'text-white' : color} text-lg`}></i>
+              <i
+                className={`
+                  ${icon}
+                  ${isActive(to) ? 'text-white' : color}
+                  text-lg
+                `}
+              ></i>
+
               <span>{label}</span>
-              
             </Link>
-            
           ))}
+
+          {/* Watchlist */}
           <Link
- to="/watchlist"
- className="
- text-zinc-400
- font-medium
- hover:bg-zinc-800
- hover:text-white
- duration-300
- rounded-lg
- px-4 py-3
- "
->
- <i className="ri-bookmark-fill"></i>
- Watchlist
-</Link>
-      
+            to="/watchlist"
+            className={`
+              flex items-center gap-3
+              px-4 py-3
+              rounded-xl
+              font-medium
+              transition-all duration-200
+              ${
+                isActive('/watchlist')
+                  ? 'bg-[#6556CD] text-white shadow-lg'
+                  : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+              }
+            `}
+          >
+            <i
+              className={`
+                ri-bookmark-fill text-lg
+                ${
+                  isActive('/watchlist')
+                    ? 'text-white'
+                    : 'text-blue-400'
+                }
+              `}
+            ></i>
+
+            <span>Watchlist</span>
+          </Link>
+
+          {/* Favorites */}
+          <Link
+            to="/favorites"
+            className={`
+              flex items-center gap-3
+              px-4 py-3
+              rounded-xl
+              font-medium
+              transition-all duration-200
+              ${
+                isActive('/favorites')
+                  ? 'bg-[#6556CD] text-white shadow-lg'
+                  : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+              }
+            `}
+          >
+            <i
+              className={`
+                ri-heart-fill text-lg
+                ${
+                  isActive('/favorites')
+                    ? 'text-white'
+                    : 'text-pink-500'
+                }
+              `}
+            ></i>
+
+            <span>Favorites</span>
+          </Link>
+
         </nav>
 
         {/* Footer */}
         <div className="px-8 py-6 border-t border-zinc-800">
-          <p className="text-zinc-600 text-xs">Powered by TMDB API</p>
+          <p className="text-zinc-600 text-xs">
+            Powered by TMDB API
+          </p>
         </div>
+
       </aside>
     </>
   )
