@@ -3,15 +3,43 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import noimage from "/noimage.webp";
 import { useAuth } from "../../hooks/useAuth";
+import { supabase } from "../../lib/supabase";
 
 const TopNav = () => {
   const [query, setQuery] = useState("");
   const [searches, setSearches] = useState([]);
+  const [profile, setProfile] = useState(null);
+
   const wrapperRef = useRef(null);
 
   // Auth
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch user profile
+  useEffect(() => {
+    const getProfile = async () => {
+      if (!user) {
+        setProfile(null);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username, avatar_url")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("TopNav profile error:", error);
+        return;
+      }
+
+      setProfile(data);
+    };
+
+    getProfile();
+  }, [user]);
 
   // Debounced search
   useEffect(() => {
@@ -111,10 +139,37 @@ const TopNav = () => {
       {/* Authentication */}
       {user ? (
         <div className="flex items-center gap-3 flex-shrink-0">
-          {/* User email */}
-          <span className="text-zinc-300 text-sm hidden sm:block">
-            {user.email}
-          </span>
+
+          {/* Profile */}
+          <Link
+            to="/profile"
+            className="flex items-center gap-2 group"
+          >
+            <img
+              src={profile?.avatar_url || noimage}
+              alt="Profile"
+              className="
+                w-9 h-9
+                rounded-full
+                object-cover
+                border border-zinc-700
+                group-hover:border-[#6556CD]
+                transition
+              "
+            />
+
+            <span
+              className="
+                text-zinc-300
+                text-sm
+                hidden sm:block
+                group-hover:text-white
+                transition
+              "
+            >
+              {profile?.username || user.email}
+            </span>
+          </Link>
 
           {/* Logout */}
           <button
@@ -135,10 +190,15 @@ const TopNav = () => {
         </div>
       ) : (
         <div className="flex items-center gap-3 flex-shrink-0">
+
           {/* Login */}
           <Link
             to="/login"
-            className="text-white hover:text-[#6556CD] text-sm sm:text-base"
+            className="
+              text-white
+              hover:text-[#6556CD]
+              text-sm sm:text-base
+            "
           >
             Login
           </Link>
@@ -217,7 +277,13 @@ const TopNav = () => {
               />
 
               <div className="min-w-0">
-                <span className="text-zinc-200 text-sm sm:text-base block truncate">
+                <span
+                  className="
+                    text-zinc-200
+                    text-sm sm:text-base
+                    block truncate
+                  "
+                >
                   {s.name ||
                     s.title ||
                     s.original_name ||

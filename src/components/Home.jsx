@@ -6,6 +6,9 @@ import Header from './templates/Header';
 import HorizontalCards from './templates/HorizontalCards';
 import Dropdown from './templates/DropDown';
 import Loading from './Loading';
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../hooks/useAuth";
+import { getMovieRecommendations } from "../utils/recommendations";
 
 const Home = () => {
   document.title = 'Home - NEXA Movie App';
@@ -14,6 +17,10 @@ const Home = () => {
   const [trending, setTrending] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [category, setCategory] = useState('all');
+  const [recommendations, setRecommendations] = useState([]);
+const [recommendationLoading, setRecommendationLoading] = useState(false);
+
+const { user } = useAuth();
 
   const getHeaderWallpaper = async () => {
     try {
@@ -46,6 +53,76 @@ const Home = () => {
 
     getTrending();
   }, [category]);
+  useEffect(() => {
+  const getRecommendations = async () => {
+    if (!user) {
+      setRecommendations([]);
+      return;
+    }
+
+    try {
+      setRecommendationLoading(true);
+
+      // Get user's movie watchlist
+      const { data: watchlist, error } = await supabase
+        .from("watchlist")
+        .select("movie_id, media_type")
+        .eq("user_id", user.id)
+        .eq("media_type", "movie");
+
+      if (error) {
+        console.error("Watchlist fetch error:", error);
+        return;
+      }
+
+      if (!watchlist || watchlist.length === 0) {
+        setRecommendations([]);
+        return;
+      }
+
+      // Use maximum 3 movies as recommendation sources
+      const sourceMovies = watchlist.slice(0, 3);
+
+      const recommendationResults = await Promise.all(
+        sourceMovies.map((movie) =>
+          getMovieRecommendations(movie.movie_id)
+        )
+      );
+
+      // Combine all recommendations
+      const combined = recommendationResults.flat();
+
+      // Remove duplicate movies
+      const uniqueMovies = Array.from(
+        new Map(
+          combined.map((movie) => [movie.id, movie])
+        ).values()
+      );
+
+      // Don't recommend movies already in watchlist
+      const watchlistIds = new Set(
+        watchlist.map((movie) => movie.movie_id)
+      );
+
+   const filteredRecommendations = uniqueMovies
+  .filter((movie) => !watchlistIds.has(movie.id))
+  .map((movie) => ({
+    ...movie,
+    media_type: "movie",
+  }))
+  .slice(0, 12);
+
+      setRecommendations(filteredRecommendations);
+    } catch (error) {
+      console.error("Recommendation error:", error);
+      setRecommendations([]);
+    } finally {
+      setRecommendationLoading(false);
+    }
+  };
+
+  getRecommendations();
+}, [user]);
 
   // Only use 5 movies for the hero carousel
   const headerSlides = trending?.slice(0, 5) || [];
@@ -116,6 +193,21 @@ const Home = () => {
           <div className="mt-2 mb-6">
             <HorizontalCards data={trending} />
           </div>
+ {user && recommendations.length > 0 && (
+  <div className="mt-8">
+    <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 mb-2">
+      <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-semibold">
+        Recommended For You
+      </h1>
+
+      <span className="text-zinc-500 text-sm">
+        Based on your watchlist
+      </span>
+    </div>
+
+    <HorizontalCards data={recommendations} />
+  </div>
+)}
         </div>
       </div>
     </div>

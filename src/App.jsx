@@ -14,6 +14,9 @@ import Watchlist from "./components/Watchlist";
 import Signup from './components/auth/Signup'
 import Login from './components/auth/Login'
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Profile from "./components/Profile";
+
+
 const App = () => {
   return (
     <div className='bg-[#0D0D0D] min-h-screen'>
@@ -36,6 +39,14 @@ const App = () => {
   element={
     <ProtectedRoute>
       <Watchlist />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <Profile />
     </ProtectedRoute>
   }
 />
